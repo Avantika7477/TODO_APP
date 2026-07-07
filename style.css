@@ -1,0 +1,216 @@
+*{
+  margin: 0%;
+  padding: 0%;
+  font-family: 'Times New Roman', Times, serif;
+}
+.hd{
+  text-align: center;
+  margin-top:20px ;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.input-area{
+  padding: 20px;
+  margin: 18px;
+  color: rgb(25, 45, 48);
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+
+}
+
+#txt-hlder,
+#date-hlder,
+#time-hlder,
+#priority-hlder{
+  padding: 10px;
+  margin: 10px;
+  font-size: larger;
+}
+#btn,
+#clear-history,
+#view-history,
+#export-csv{
+  color: rgb(240, 231, 231);
+  background-color: rgb(177, 116, 157);
+  border-color: rgb(224, 117, 153);
+  margin: 10px;
+  padding: 8px 12px;
+  font-size: larger;
+  font-weight: 800;
+  cursor: pointer;
+}
+#clear-history{
+  background-color: #f06c6c;
+  border-color: #d94f4f;
+}
+#clear-history:hover{
+  background-color: #e44d4d;
+}
+#task-list{
+  font-size: 30px;
+  font-weight: 800;
+  list-style-position: inside; /* keep numbers close to the text */
+  display: block;              /* force the list to start on its own line */
+  width: 80%;                  /* limit width so it doesn't span full viewport */
+  margin: 12px auto 0;         /* sit below inputs and be centered */
+  text-align: left;            /* keep each item text left-aligned */
+  padding-left: 0;
+}
+
+.task-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.task-left{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.task-time{
+  font-size: 16px;
+  color: #444;
+  font-weight: 600;
+}
+.task-date{
+  font-size: 14px;
+  color: #6b7280;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(239,245,255,0.7);
+}
+.priority-label{
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+.priority-High{ background: #e53e3e; }
+.priority-Medium{ background: #d69e2e; }
+.priority-Low{ background: #38a169; }
+
+#progress-heatmap{
+  width: 100%;
+  min-height: 180px;
+  background: #fff8e8;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  padding: 12px;
+}
+.heatmap-grid{
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+.heatmap-cell{
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  border-radius: 4px;
+  background: #f0f0f0;
+}
+.heatmap-cell span{
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: rgba(0,0,0,0.65);
+}
+.heatmap-cell.level-0{ background: #f7fafc; }
+.heatmap-cell.level-1{ background: #c6f6d5; }
+.heatmap-cell.level-2{ background: #68d391; }
+.heatmap-cell.level-3{ background: #2f855a; }
+.heatmap-cell.level-4{ background: #22543d; }
+#tracker{
+  width: 80%;
+  margin: 10px auto;
+  text-align: center;
+  font-weight: 700;
+  color: #2b6cb0;
+}
+#history-panel{
+  width: 80%;
+  margin: 10px auto 16px;
+  padding: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  background: rgba(235, 245, 255, 0.7);
+}
+#history-list{
+  list-style: none;
+  padding-left: 0;
+}
+#history-list li{
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+#progress-chart{
+  width: 100%;
+  min-height: 160px;
+  background: #f5faff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  padding: 12px;
+}
+.chart-row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.chart-label{
+  width: 90px;
+  font-size: 14px;
+  color: #333;
+}
+.chart-bar-wrap{
+  flex: 1;
+  background: rgba(33, 150, 243, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.chart-bar{
+  height: 24px;
+  background: #1e88e5;
+  color: white;
+  padding-left: 10px;
+  line-height: 24px;
+  white-space: nowrap;
+}
+.history-date{
+  margin-bottom: 10px;
+}
+.history-tasks{
+  list-style: none;
+  padding-left: 18px;
+  margin-top: 6px;
+}
+.history-task{
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+#greeting{
+  color:black;
+  font-size:25px ;
+  font-weight: 700;
+  font-feature-settings: "aalt";
+  /* margin-left: 20px; */
+  text-align: center;
+
+  
+}

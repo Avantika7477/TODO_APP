@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>TodoApp</title>
+</head>
+<body>
+  <header> 
+ 
+  <h1 class="hd">TODO APP</h1>
+  </header>
+
+   <section>
+    <p id="greeting"></p>
+  </section>
+  <section>
+  <div class="input-area">
+    <input id="txt-hlder" type="text" placeholder="write todays task here">
+    <input id="date-hlder" type="date" aria-label="Set task date">
+    <input id="time-hlder" type="time" aria-label="Set time to complete">
+    <select id="priority-hlder" aria-label="Select priority">
+      <option value="High">High</option>
+      <option value="Medium" selected>Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <input id="btn" type="button" value="Add Task">
+  </div>
+  <section>
+    <ol id="task-list">
+    </ol>
+    <div id="tracker" aria-live="polite">Today: 0/0 completed</div>
+    <div style="text-align:center; margin-top:8px;">
+      <button id="view-history">View History</button>
+      <button id="export-csv">Export CSV</button>
+      <button id="clear-history">Clear History</button>
+    </div>
+    <div id="progress-chart" style="display:none; margin: 10px auto; width: 80%; max-width: 600px;"></div>
+    <div id="progress-heatmap" style="display:none; margin: 10px auto; width: 80%; max-width: 600px;"></div>
+    <div id="history-panel" aria-live="polite" style="display:none;">
+      <h3 style="text-align:center;">Progress History</h3>
+      <ul id="history-list"></ul>
+    </div>
+  </section>
+ 
+  <script src="script.js"></script>
+</body>
+</html>
