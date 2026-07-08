@@ -12,20 +12,46 @@ const heatmapDiv = document.getElementById('progress-heatmap');
 let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
 let history = JSON.parse(localStorage.getItem('history') || '{}');
 
+tasks = tasks.map(task => ({ ...task, id: task.id || `${Date.now()}-${Math.random().toString(16).slice(2)}` }));
+
+function ensureHistoryEntry(date) {
+  if (!history[date]) history[date] = { total: 0, completed: 0, tasks: [] };
+  if (!Array.isArray(history[date].tasks)) history[date].tasks = [];
+  history[date].total = history[date].total || 0;
+  history[date].completed = history[date].completed || 0;
+  return history[date];
+}
+
 function buildHistory(){
-  history = tasks.reduce((acc, task) => {
-    const day = task.date;
-    if(!acc[day]) acc[day] = { total: 0, completed: 0 };
-    acc[day].total += 1;
-    if(task.done) acc[day].completed += 1;
-    return acc;
-  }, {});
+  if (Object.keys(history).length) return;
+  tasks.forEach(task => {
+    const entry = ensureHistoryEntry(task.date || new Date().toISOString().slice(0, 10));
+    entry.total += 1;
+    if (task.done) entry.completed += 1;
+    entry.tasks.push({ ...task });
+  });
   localStorage.setItem('history', JSON.stringify(history));
+}
+
+function recordHistoryTask(task) {
+  const entry = ensureHistoryEntry(task.date);
+  entry.total += 1;
+  if (task.done) entry.completed += 1;
+  entry.tasks.push({ ...task });
+}
+
+function updateHistoryCompletion(taskId, date, wasDone, isDone) {
+  const entry = ensureHistoryEntry(date);
+  const historyTask = entry.tasks.find(item => item.id === taskId);
+  if (historyTask) historyTask.done = isDone;
+  if (wasDone === isDone) return;
+  if (isDone) entry.completed += 1;
+  else entry.completed = Math.max(0, entry.completed - 1);
 }
 
 function saveTasks(){
   localStorage.setItem('tasks', JSON.stringify(tasks));
-  buildHistory();
+  localStorage.setItem('history', JSON.stringify(history));
   updateTracker();
 }
 
@@ -66,7 +92,9 @@ function renderTasks(){
     chk.type = 'checkbox';
     chk.checked = !!t.done;
     chk.addEventListener('change', ()=>{
+      const wasDone = t.done;
       t.done = chk.checked;
+      updateHistoryCompletion(t.id, t.date, wasDone, chk.checked);
       saveTasks();
       renderTasks();
     });
@@ -94,7 +122,8 @@ function renderTasks(){
     const del = document.createElement('button');
     del.textContent = 'Delete';
     del.addEventListener('click', ()=>{
-      tasks.splice(idx,1);
+      const deleteIndex = tasks.findIndex(item => item.id === t.id);
+      if (deleteIndex !== -1) tasks.splice(deleteIndex, 1);
       saveTasks();
       renderTasks();
     });
@@ -114,6 +143,7 @@ button.addEventListener("click", () => {
   const date = dateInput.value || new Date().toISOString().slice(0,10);
   if (task) {
     const obj = {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
       text: task,
       time: time,
       priority: priority,
@@ -121,6 +151,7 @@ button.addEventListener("click", () => {
       date: date
     };
     tasks.push(obj);
+    recordHistoryTask(obj);
     saveTasks();
     renderTasks();
     input.value = "";
@@ -154,18 +185,17 @@ function groupTasksByDate() {
 
 function renderHistory(){
   historyList.innerHTML = '';
-  const tasksByDate = groupTasksByDate();
   const days = Object.keys(history).sort((a,b)=>b.localeCompare(a)).slice(0,14);
 
   days.forEach(d=>{
-    const it = history[d] || { total: 0, completed: 0 };
+    const it = history[d] || { total: 0, completed: 0, tasks: [] };
     const li = document.createElement('li');
     li.className = 'history-date';
     const header = document.createElement('div');
     header.innerHTML = `<strong>${d}</strong>: ${it.completed}/${it.total} completed`;
     li.appendChild(header);
 
-    const tasksForDate = tasksByDate[d] || [];
+    const tasksForDate = it.tasks || [];
     if(tasksForDate.length){
       const subList = document.createElement('ul');
       subList.className = 'history-tasks';
