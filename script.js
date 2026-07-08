@@ -2,7 +2,7 @@ const input = document.querySelector(".input-area input[type='text']");
 const timeInput = document.getElementById("time-hlder");
 const dateInput = document.getElementById("date-hlder");
 const priorityInput = document.getElementById("priority-hlder");
-const button = document.querySelector(".input-area input[type='button']");
+const button = document.getElementById('btn');
 const taskList = document.getElementById("task-list");
 const Greeting = document.getElementById("greeting");
 const tracker = document.getElementById('tracker');
