@@ -291,7 +291,7 @@ viewHistoryBtn.addEventListener('click', ()=>{
 exportCsvBtn.addEventListener('click', exportCSV);
 clearHistoryBtn.addEventListener('click', clearHistory);
 
-const text="Hey, what's todays plan ?";
+const text="Hey.., What are your plans for today.. ?";
 let index =0;
 function typeText(){
   if(index<text.length){
