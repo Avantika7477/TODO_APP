@@ -6,6 +6,9 @@ const button = document.getElementById('btn');
 const taskList = document.getElementById("task-list");
 const Greeting = document.getElementById("greeting");
 const tracker = document.getElementById('tracker');
+const trackerPct = document.getElementById('tracker-pct');
+const trackerCount = document.getElementById('tracker-count');
+const emptyState = document.getElementById('empty-state');
 const clearHistoryBtn = document.getElementById('clear-history');
 const heatmapDiv = document.getElementById('progress-heatmap');
 
@@ -59,7 +62,11 @@ function updateTracker(){
   const today = new Date().toISOString().slice(0,10);
   const todays = tasks.filter(t=>t.date===today);
   const completed = todays.filter(t=>t.done).length;
-  tracker.textContent = `Today: ${completed}/${todays.length} completed`;
+  const percent = todays.length ? Math.round((completed / todays.length) * 100) : 0;
+  const ring = tracker.querySelector('.ring');
+  if (ring) ring.style.setProperty('--p', percent);
+  if (trackerPct) trackerPct.textContent = `${percent}%`;
+  if (trackerCount) trackerCount.textContent = `${completed} of ${todays.length} complete`;
 }
 
 function getSortKey(task){
@@ -81,9 +88,12 @@ function compareTasks(a, b){
 function renderTasks(){
   taskList.innerHTML = '';
   const sortedTasks = [...tasks].sort(compareTasks);
+  emptyState.classList.toggle('hidden', sortedTasks.length > 0);
+
   sortedTasks.forEach((t, idx)=>{
     const li = document.createElement('li');
-    li.className = 'task-item';
+    li.className = 'task-item' + (t.done ? ' done' : '');
+    li.style.animationDelay = `${Math.min(idx, 8) * 45}ms`;
 
     const left = document.createElement('div');
     left.className = 'task-left';
@@ -91,6 +101,7 @@ function renderTasks(){
     const chk = document.createElement('input');
     chk.type = 'checkbox';
     chk.checked = !!t.done;
+    chk.setAttribute('aria-label', 'Mark task complete');
     chk.addEventListener('change', ()=>{
       const wasDone = t.done;
       t.done = chk.checked;
@@ -100,8 +111,8 @@ function renderTasks(){
     });
 
     const span = document.createElement('span');
+    span.className = 'task-text';
     span.textContent = t.text;
-    if(t.done) span.style.textDecoration = 'line-through';
 
     const priority = document.createElement('span');
     priority.className = `priority-label priority-${t.priority}`;
@@ -117,15 +128,18 @@ function renderTasks(){
 
     const dateLabel = document.createElement('div');
     dateLabel.className = 'task-date';
-    dateLabel.textContent = t.date === new Date().toISOString().slice(0,10) ? '' : t.date;
+    dateLabel.textContent = t.date === new Date().toISOString().slice(0,10) ? 'Today' : t.date;
 
     const del = document.createElement('button');
-    del.textContent = 'Delete';
+    del.textContent = 'Remove';
     del.addEventListener('click', ()=>{
-      const deleteIndex = tasks.findIndex(item => item.id === t.id);
-      if (deleteIndex !== -1) tasks.splice(deleteIndex, 1);
-      saveTasks();
-      renderTasks();
+      li.classList.add('removing');
+      setTimeout(() => {
+        const deleteIndex = tasks.findIndex(item => item.id === t.id);
+        if (deleteIndex !== -1) tasks.splice(deleteIndex, 1);
+        saveTasks();
+        renderTasks();
+      }, 280);
     });
 
     li.appendChild(left);
@@ -158,30 +172,25 @@ button.addEventListener("click", () => {
     dateInput.value = new Date().toISOString().slice(0,10);
     timeInput.value = "";
     priorityInput.value = 'Medium';
+    input.focus();
   }
 });
 
-// initialize date field and history
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') button.click();
+});
+
 const todayValue = new Date().toISOString().slice(0,10);
 dateInput.value = todayValue;
 buildHistory();
 renderTasks();
 updateTracker();
 
-// history UI
 const viewHistoryBtn = document.getElementById('view-history');
 const exportCsvBtn = document.getElementById('export-csv');
 const historyPanel = document.getElementById('history-panel');
 const historyList = document.getElementById('history-list');
 const chartDiv = document.getElementById('progress-chart');
-
-function groupTasksByDate() {
-  return tasks.reduce((group, task) => {
-    if (!group[task.date]) group[task.date] = [];
-    group[task.date].push(task);
-    return group;
-  }, {});
-}
 
 function renderHistory(){
   historyList.innerHTML = '';
@@ -212,10 +221,10 @@ function renderHistory(){
 }
 
 function renderChart(){
-  chartDiv.innerHTML = '';
+  chartDiv.innerHTML = '<h3>Weekly progress</h3>';
   const days = Object.keys(history).sort((a,b)=>b.localeCompare(a)).slice(0,7).reverse();
   if(!days.length){
-    chartDiv.textContent = 'No progress history yet.';
+    chartDiv.insertAdjacentHTML('beforeend', '<p class="history-task">No progress history yet.</p>');
     return;
   }
 
@@ -227,21 +236,23 @@ function renderChart(){
     row.innerHTML = `
       <div class="chart-label">${d}</div>
       <div class="chart-bar-wrap">
-        <div class="chart-bar" style="width: ${percent}%">${percent}%</div>
+        <div class="chart-bar" style="--w:${percent}%">${percent}%</div>
       </div>
     `;
     chartDiv.appendChild(row);
+    const bar = row.querySelector('.chart-bar');
+    requestAnimationFrame(() => { bar.style.width = percent + '%'; });
   });
 }
 
 function renderHeatmap(){
-  heatmapDiv.innerHTML = '<strong>Weekly completion heatmap</strong>';
+  heatmapDiv.innerHTML = '<strong>Weekly completion</strong>';
   const container = document.createElement('div');
   container.className = 'heatmap-grid';
 
   const days = Object.keys(history).sort((a,b)=>b.localeCompare(a)).slice(0,7).reverse();
   if(!days.length){
-    heatmapDiv.innerHTML = '<strong>Weekly completion heatmap</strong><p>No history data yet.</p>';
+    heatmapDiv.innerHTML = '<strong>Weekly completion</strong><p class="history-task">No history data yet.</p>';
     return;
   }
 
@@ -302,33 +313,33 @@ function clearHistory(){
 }
 
 viewHistoryBtn.addEventListener('click', ()=>{
-  if(historyPanel.style.display==='none'){
+  const isHidden = historyPanel.hasAttribute('hidden');
+  if(isHidden){
     renderHistory();
     renderChart();
     renderHeatmap();
-    historyPanel.style.display='block';
-    chartDiv.style.display='block';
-    heatmapDiv.style.display='block';
-    viewHistoryBtn.textContent = 'Hide History';
+    historyPanel.removeAttribute('hidden');
+    chartDiv.removeAttribute('hidden');
+    heatmapDiv.removeAttribute('hidden');
+    viewHistoryBtn.textContent = 'Hide history';
   } else {
-    historyPanel.style.display='none';
-    chartDiv.style.display='none';
-    heatmapDiv.style.display='none';
-    viewHistoryBtn.textContent = 'View History';
+    historyPanel.setAttribute('hidden', '');
+    chartDiv.setAttribute('hidden', '');
+    heatmapDiv.setAttribute('hidden', '');
+    viewHistoryBtn.textContent = 'History';
   }
 });
 
 exportCsvBtn.addEventListener('click', exportCSV);
 clearHistoryBtn.addEventListener('click', clearHistory);
 
-const text="Hey.., What are your plans for today.. ?";
+const text="Hey… what are your plans for today?";
 let index =0;
 function typeText(){
   if(index<text.length){
     Greeting.textContent+=text.charAt(index)
     index++;
-    setTimeout(typeText,100);
+    setTimeout(typeText, 42);
   }
 }
 typeText();
-

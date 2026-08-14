@@ -3,47 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <title>TodoApp</title>
+  <title>Lumen · Tasks</title>
 </head>
 <body>
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="grain"></span>
+  </div>
+
   <div class="container">
     <header class="header">
-      <h1 class="hd">📝Today's Tasks</h1>
-      <p id="greeting" class="greeting"></p>
+      <div class="brand reveal">
+        <span class="brand-mark">L</span>
+        <span class="brand-name">Lumen</span>
+      </div>
+      <h1 class="hd reveal delay-1">Today’s focus</h1>
+      <p id="greeting" class="greeting reveal delay-2"></p>
     </header>
-  <section class="main-content">
+
+    <section class="main-content reveal delay-3">
       <div class="input-section">
+        <p class="input-kicker">New task</p>
         <div class="input-area">
-          <input id="txt-hlder" type="text" placeholder="Add a new task..." class="input-field">
+          <input id="txt-hlder" type="text" placeholder="What needs to get done?" class="input-field">
           <input id="date-hlder" type="date" aria-label="Set task date" class="input-field">
           <input id="time-hlder" type="time" aria-label="Set time to complete" class="input-field">
           <select id="priority-hlder" aria-label="Select priority" class="input-field">
-            <option value="High">🔴 High</option>
-            <option value="Medium" selected>🟡 Medium</option>
-            <option value="Low">🟢 Low</option>
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
           </select>
-          <button id="btn" class="btn-add">+ Add</button>
+          <button id="btn" class="btn-add">Add task</button>
         </div>
       </div>
-  <section class="tasks-section">
-      <div id="tracker" class="tracker" aria-live="polite">Today: 0/0 completed</div>
+
+      <section class="tasks-section">
+        <div id="tracker" class="tracker" aria-live="polite">
+          <div class="ring" style="--p:0">
+            <span id="tracker-pct">0%</span>
+          </div>
+          <div class="tracker-copy">
+            <strong id="tracker-count">0 of 0 complete</strong>
+            <span>Keep the streak going</span>
+          </div>
+        </div>
         <ol id="task-list" class="task-list"></ol>
-      </div>
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon">✦</div>
+          <h2>Your day is clear</h2>
+          <p>Add a task above and it will land here, sorted by time.</p>
+        </div>
+      </section>
 
       <div class="controls-section">
-        <button id="view-history" class="btn-control">📊 History</button>
-        <button id="export-csv" class="btn-control">📥 Export</button>
-        <button id="clear-history" class="btn-control btn-danger">🗑️ Clear</button>
+        <button id="view-history" class="btn-control">History</button>
+        <button id="export-csv" class="btn-control">Export</button>
+        <button id="clear-history" class="btn-control btn-danger">Clear history</button>
       </div>
     </section>
-    <div id="progress-chart" class="panel" style="display:none;"></div>
-    <div id="progress-heatmap" class="panel" style="display:none;"></div>
-    <div id="history-panel" class="panel" aria-live="polite" style="display:none;">
-      <h3>📅 Progress History</h3>
+
+    <div id="progress-chart" class="panel" hidden></div>
+    <div id="progress-heatmap" class="panel" hidden></div>
+    <div id="history-panel" class="panel" aria-live="polite" hidden>
+      <h3>Progress history</h3>
       <ul id="history-list"></ul>
     </div>
   </div>
   <script src="script.js"></script>
-  </body>
+</body>
 </html>
